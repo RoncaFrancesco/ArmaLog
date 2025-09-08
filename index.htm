@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>ArmaLog • Registro uso arma (offline)</title>
+<style>
+/* Spacing between merged sections inside Settings single card */
+#tab-settings .card .title{ margin-top: 16px; }
+#tab-settings .card .title:first-child{ margin-top: 0; }
+
+/* --- Extra clearance for last settings card (mobile) --- */
+#tab-settings .card:last-of-type{
+  margin-bottom: calc(24px + var(--tabbar-h) + env(safe-area-inset-bottom));
+}
+
+/* --- Extra clearance for last dashboard card (mobile) --- */
+#tab-dashboard .card:last-of-type{
+  margin-bottom: calc(24px + var(--tabbar-h) + env(safe-area-inset-bottom));
+}
+
+/* --- Fix: prevent bottom nav from overlapping last card (mobile safe) --- */
+:root{ --tabbar-h: 80px; }
+.container{ padding-bottom: calc(16px + var(--tabbar-h) + env(safe-area-inset-bottom)); }
+nav{ padding-bottom: env(safe-area-inset-bottom); }
+
+  :root{
+    --bg:#0b0d10;--bg-soft:#12161b;--card:#151a21;--muted:#8fa3b4;--text:#e7eef6;--accent:#4cc9f0;--accent-2:#00f5d4;--danger:#ff6b6b;--warn:#ffd166;--ok:#8cffc1;
+    --radius:16px;--shadow:0 6px 24px rgba(0,0,0,.35);--gap:12px;--gap2:18px;--gap3:24px;
+  }
+  :root[data-theme="light"]{--bg:#f6f8fb;--bg-soft:#eef2f7;--card:#ffffff;--muted:#506070;--text:#0e1720;--accent:#2563eb;--accent-2:#059669;--danger:#e11d48;--warn:#b45309;--ok:#16a34a}
+  html,body{height:100%}
+  body{margin:0;background:radial-gradient(1200px 800px at 80% -10%, rgba(76,201,240,.08), transparent 60%),linear-gradient(180deg, var(--bg), var(--bg));color:var(--text);font:500 15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial;letter-spacing:.2px}
+  *{box-sizing:border-box}
+  a{color:var(--accent)}
+  header{position:sticky;top:0;z-index:5;background:linear-gradient(180deg,var(--bg),color-mix(in oklab, var(--bg) 80%, transparent));backdrop-filter:saturate(140%) blur(8px);border-bottom:1px solid color-mix(in oklab,var(--card),#000 12%)}
+  .h-wrap{display:flex;align-items:center;gap:10px;max-width:980px;margin:0 auto;padding:12px 16px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800}
+  .logo svg{width:22px;height:22px}
+  .spacer{flex:1}
+  .h-actions{display:flex;gap:8px}
+  button,.btn{appearance:none;border:0;padding:10px 14px;border-radius:12px;background:linear-gradient(180deg,color-mix(in oklab, var(--accent) 14%, var(--card)), var(--card));color:var(--text);box-shadow:var(--shadow);cursor:pointer;display:inline-flex;align-items:center;gap:8px;font-weight:700}
+  button.ghost{background:var(--bg-soft);box-shadow:none;border:1px solid color-mix(in oklab,var(--card),#000 10%)}
+  button.danger{background:linear-gradient(180deg,color-mix(in oklab, var(--danger) 22%, var(--card)), var(--card))}
+  button.warn{background:linear-gradient(180deg,color-mix(in oklab, var(--warn) 22%, var(--card)), var(--card))}
+  .container{max-width:980px;margin:0 auto;padding:16px}
+  .grid{display:grid;gap:var(--gap2)}
+  .grid.kpi{grid-template-columns:repeat(2,minmax(0,1fr))}
+  @media(min-width:860px){.grid.kpi{grid-template-columns:repeat(4,minmax(0,1fr))}}
+  .card{background:linear-gradient(180deg, color-mix(in oklab,var(--card),#fff 2%), var(--card));border:1px solid color-mix(in oklab,var(--card),#000 10%);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+  .muted{color:var(--muted)}
+  .title{font-size:20px;font-weight:800;margin:0 0 8px}
+  .subtitle{font-weight:700;color:var(--muted);margin-top:-4px}
+  .kpi .big{font-size:28px;font-weight:900}
+  input,select,textarea{width:100%;padding:10px 12px;border:1px solid color-mix(in oklab,var(--card),#000 12%);background:var(--bg-soft);color:var(--text);border-radius:12px;outline:none}
+  label{font-weight:700;font-size:13px;color:var(--muted)}
+  form .row{display:grid;grid-template-columns:1fr;gap:10px}
+  @media(min-width:680px){form .row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  table{width:100%;border-collapse:collapse}
+  th,td{padding:10px;border-bottom:1px dashed color-mix(in oklab,var(--card),#000 14%);text-align:left}
+  th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);cursor:pointer}
+  tr:hover td{background:color-mix(in oklab,var(--bg-soft),#fff 2%)}
+  .row-actions{display:flex;gap:8px}
+  .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;background:color-mix(in oklab, var(--accent) 18%, var(--bg-soft));font-size:12px}
+  .warn-badge{background:color-mix(in oklab, var(--warn) 35%, var(--bg-soft))}
+  .fab{position:fixed;right:16px;bottom:80px;z-index:5}
+  nav{position:sticky;bottom:0;background:linear-gradient(0deg,var(--bg),color-mix(in oklab,var(--bg) 70%,transparent));border-top:1px solid color-mix(in oklab,var(--card),#000 12%)}
+  .nav{display:grid;grid-template-columns:repeat(7,1fr);max-width:980px;margin:0 auto}
+  .nav a{display:flex;flex-direction:column;align-items:center;padding:10px 8px;color:var(--muted);text-decoration:none;font-weight:800}
+  .nav a.active{color:var(--text)}
+  .nav svg{width:22px;height:22px;margin-bottom:2px}
+  .hidden{display:none !important}
+  .flex{display:flex;gap:10px;align-items:center}
+  .right{margin-left:auto}
+  .toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%);background:var(--card);border:1px solid color-mix(in oklab,var(--card),#000 12%);padding:10px 14px;border-radius:12px;box-shadow:var(--shadow);z-index:20}
+  .lock{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg, color-mix(in oklab,var(--bg),#000 20%), var(--bg));z-index:30}
+  .lock .card{max-width:380px;width:92%}
+  .help p{margin:.5em 0}
+  .table-actions{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+
+/* ===== Mobile 9:16 portrait optimizations ===== */
+@media (max-width: 430px) and (orientation: portrait) {
+  :root{ --radius:14px; --gap:8px; --gap2:12px; --gap3:16px; }
+  body{ padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
+  header .h-wrap{ padding:10px 12px }
+  .title{ font-size:18px }
+  .container{ max-width:100%; padding:12px 12px }
+  .card{ padding:12px; border-radius:14px }
+  .grid.kpi{ grid-template-columns:repeat(2,minmax(0,1fr)) }
+  input, select, textarea{ min-height:44px; font-size:16px }
+  button,.btn{ min-height:44px; padding:10px 12px; font-size:16px }
+  nav{ position:fixed; left:0; right:0; bottom:0; z-index:10; padding-bottom:env(safe-area-inset-bottom) }
+  .nav{ grid-template-columns:repeat(7,1fr) }
+  .nav a{ padding:10px 0 }
+  .nav a span{ display:none }
+  .nav svg{ width:24px; height:24px; margin:0 }
+  .fab{ right:calc(env(safe-area-inset-right) + 14px); bottom: calc(env(safe-area-inset-bottom) + 76px) }
+  .toast{ bottom: calc(env(safe-area-inset-bottom) + 90px) }
+  .table-wrap{ overflow-x:auto; -webkit-overflow-scrolling:touch }
+  table{ min-width:560px }
+  #tblArmi th:nth-child(3), #tblArmi td:nth-child(3),
+  #tblArmi th:nth-child(4), #tblArmi td:nth-child(4),
+  #tblArmi th:nth-child(6), #tblArmi td:nth-child(6)  { display:none }
+  #tblSessioni th:nth-child(4), #tblSessioni td:nth-child(4),
+  #tblSessioni th:nth-child(5), #tblSessioni td:nth-child(5),
+  #tblSessioni th:nth-child(6), #tblSessioni td:nth-child(6)  { display:none }
+  #tblManu th:nth-child(4), #tblManu td:nth-child(4),
+  #tblManu th:nth-child(5), #tblManu td:nth-child(5)  { display:none }
+  #tblMuni th:nth-child(2), #tblMuni td:nth-child(2),
+  #tblMuni th:nth-child(3), #tblMuni td:nth-child(3)  { display:none }
+  th, td{ padding:8px }
+}
+.table-wrap{ overflow-x:auto; -webkit-overflow-scrolling:touch }
+
+
+/* === Settings layout (mobile friendly) === */
+#tab-settings .settings-list{ display:grid; gap:var(--gap2); }
+#tab-settings .setting{ display:flex; align-items:center; gap:12px; }
+#tab-settings .setting .label{ font-weight:700; color:var(--muted); }
+#tab-settings .setting .controls{ margin-left:auto; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+#tab-settings .chips{ display:flex; gap:8px; flex-wrap:wrap; }
+#tab-settings .chip{ padding:8px 10px; border-radius:999px; }
+#tab-settings .actions-row{ display:flex; gap:8px; flex-wrap:wrap; }
+#tab-settings .card .title{ margin-top: 0; margin-bottom: 8px; }
+#tab-settings .chip[aria-checked="true"]{ outline:2px solid color-mix(in oklab, var(--accent), #fff 10%); background:color-mix(in oklab, var(--accent) 18%, var(--bg-soft)); }
+
+@media (max-width: 430px) and (orientation: portrait){
+  #tab-settings .setting{ flex-direction:column; align-items:stretch; }
+  #tab-settings .setting .controls{ margin-left:0; }
+  #tab-settings input[type="number"],
+  #tab-settings input[type="password"],
+  #tab-settings input[type="text"]{ width:100%; min-height:44px; }
+  #tab-settings .actions-row > *{ flex:1 1 46%; }
+}
+
+/* Dashboard KPI uniform */
+#tab-dashboard .grid.kpi{ grid-auto-rows: 120px; align-items: stretch; }
+#tab-dashboard .grid.kpi > .card.kpi{ height:100%; max-width:none; width:auto; display:flex; flex-direction:column; justify-content:center; align-items:flex-start; }
+.kpi .big{ font-size:32px; font-weight:900 }
+
+/* Responsive charts grid */
+#tab-dashboard .dashCharts{ margin-top:var(--gap3); grid-template-columns:1fr; }
+@media(min-width:680px){ #tab-dashboard .dashCharts{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+#tab-dashboard canvas{ width:100%; height:auto; aspect-ratio: 16 / 7; }
+
+/* Footer */
+.app-footer{ text-align:center; color:var(--muted); font-weight:600; font-size:12px; padding:16px 0; margin-top:16px; border-top:1px dashed color-mix(in oklab, var(--muted), transparent 60%); }
+@media (max-width: 680px){ .app-footer{ padding-bottom: calc(16px + var(--tabbar-h) + env(safe-area-inset-bottom)); } }
+
+/* Empty states */
+tbody tr.empty td{ text-align:center; color:var(--muted); font-style:italic; padding:18px; }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+}
+
+/* Dark true-black */
+:root[data-theme="dark"]{ --bg:#000; --bg-soft:#0b0d10; --card:#0f1318; }
+
+.subtitle.online{ color: var(--ok); }
+.subtitle.offline{ color: var(--danger); }
+
+/* === Top navigation overrides (moved nav inside header) === */
+nav.top-nav{
+  position: static;
+  background: linear-gradient(180deg,var(--bg),color-mix(in oklab, var(--bg) 80%, transparent));
+  border-top: 1px solid color-mix(in oklab,var(--card),#000 12%);
+}
+nav.top-nav .nav{
+  display: grid;
+  grid-template-columns:repeat(7,1fr);
+  max-width: 980px;
+  margin: 0 auto;
+}
+nav.top-nav .nav a{
+  padding: 10px 8px;
+}
+/* Remove bottom padding now that nav is at top */
+.container{ padding-bottom: 16px !important; }
+body{ padding-bottom: 0 !important; }
+/* Prevent mobile rules from pinning nav to the bottom */
+@media (max-width: 430px) and (orientation: portrait){
+  nav.top-nav{
+    position: static !important;
+    left: auto !important; right: auto !important; bottom: auto !important;
+    z-index: 10;
+  }
+  nav.top-nav .nav{
+    grid-template-columns:repeat(7, 1fr);
+  }
+  nav.top-nav .nav a span{ display: none; }
+  nav.top-nav .nav a{ padding: 10px 0; }
+}
+
+/* === Nav icon shrink to fit in one line === */
+nav.top-nav .nav svg{
+  width:18px;
+  height:18px;
+}
+nav.top-nav .nav a{
+  font-size: 13px;
+  gap: 2px;
+}
+
+
+/* === Force nav items into a single horizontal row === */
+nav.top-nav .nav {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr) !important; /* 7 menu items */
+  max-width: 100% !important;
+  margin: 0 auto !important;
+}
+
+nav.top-nav .nav a {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  padding: 6px 4px !important;
+  font-size: 12px !important;
+  white-space: nowrap !important;
+}
+
+nav.top-nav .nav svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+
+/* === Nav in una riga con icone grandi === */
+nav.top-nav .nav {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr) !important; /* 7 menu */
+  max-width: 100% !important;
+  margin: 0 auto !important;
+}
+
+nav.top-nav .nav a {
+  display: flex !important;
+  flex-direction: column !important;  /* icona sopra, testo sotto */
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 6px 2px !important;
+  font-size: 12px !important;
+}
+
+nav.top-nav .nav svg {
+  width: 22px !important;
+  height: 22px !important;
+}
+
+</style>
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#0b0d10">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<style>
+/* A11y polish: clear, non-intrusive focus ring */
+:where(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Ensure action buttons are comfortably tappable */
+.row-actions button { min-width: 2.25rem; min-height: 2.25rem; }
+
+/* Improve nav focus visibility on keyboard */
+nav .nav a:focus-visible { box-shadow: 0 0 0 2px currentColor inset; border-radius: 12px; }
+</style>
+
+
+<style>
+/* ========= Aesthetic Polish Layer (non-breaking overrides) ========= */
+
+/* Cards: softer shadows, rounder corners */
+.card{
+  border-radius: var(--radius, 16px);
+  box-shadow: var(--shadow, 0 8px 28px rgba(0,0,0,0.08));
+  border: 1px solid rgba(0,0,0,0.06);
+  background: var(--card,#fff);
+}
+
+/* Table: zebra stripes, hover, sticky header */
+table{ border-collapse: separate; border-spacing: 0; width: 100%; }
+thead th{
+  position: sticky; top: 0;
+  background: var(--card,#fff);
+  z-index: 2;
+}
+tbody tr:nth-child(even){ background: rgba(0,0,0,0.025); }
+tbody tr:hover{ background: rgba(0,0,0,0.045); }
+th, td{ padding: 10px 12px; border-bottom: 1px solid rgba(0,0,0,0.06); }
+
+/* Action cells */
+.row-actions{ white-space: nowrap; text-align: right; }
+.row-actions button{
+  border-radius: 12px;
+  padding: 6px 10px;
+  margin-left: 6px;
+  transition: transform .06s ease, background .15s ease;
+}
+.row-actions button:active{ transform: scale(0.96); }
+.row-actions .ghost:hover{ background: rgba(0,0,0,0.06); }
+.row-actions .danger:hover{ background: color-mix(in oklab, var(--danger,#e11d48) 16%, transparent); }
+
+/* Top nav: subtle active indicator */
+.top-nav{ backdrop-filter: saturate(1.2) blur(6px); }
+nav .nav a{
+  border-radius: 12px;
+  transition: background .2s ease, color .2s ease, transform .08s ease;
+}
+nav .nav a:active{ transform: translateY(1px); }
+nav .nav a.active{
+  background: color-mix(in oklab, var(--accent,#3B82F6) 10%, transparent);
+}
+nav .nav a.active::after{
+  content:''; display:block; height:3px; border-radius:3px;
+  background: var(--accent,#3B82F6); margin-top:6px;
+}
+
+/* Toast: bottom-center with gentle animation */
+.toast{
+  position: fixed; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  background: var(--text,#0f172a); color: white;
+  padding: 10px 14px; border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(0,0,0,.2);
+  transition: opacity .2s ease, transform .2s ease;
+}
+.toast.hidden{ opacity: 0; pointer-events: none; transform: translate(-50%, 10px); }
+
+/* Floating Action Button */
+.fab button{
+  width: 56px; height: 56px; border-radius: 16px;
+  font-size: 28px; line-height: 1;
+  box-shadow: 0 12px 24px rgba(0,0,0,.16);
+}
+
+/* Inputs & forms: comfortable spacing */
+input, select, textarea{ border-radius: 10px; padding: 10px 12px; }
+label{ font-weight: 600; color: color-mix(in oklab, var(--text,#0f172a) 80%, transparent); }
+</style>
+
+
+<style>
+/* ===== Mobile-first polish for 9:16 smartphones ===== */
+
+/* Improve tap experience */
+* { -webkit-tap-highlight-color: transparent; }
+button, a { touch-action: manipulation; }
+
+/* Make sure content doesn't hide behind system UI */
+:root { --safe-bottom: env(safe-area-inset-bottom); --safe-top: env(safe-area-inset-top); }
+
+/* Portrait-first adjustments */
+@media (orientation: portrait) {
+  html, body { font-size: 16px; }
+  /* Cards that contain tables can scroll horizontally without breaking layout */
+  .card:has(table) { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  /* Give tables a sensible minimum width so columns non si accalcano */
+  .card table { min-width: 640px; }
+  /* Keep footer/FAB away from bottom bar */
+  .fab { bottom: calc(16px + var(--safe-bottom) + var(--tabbar-h, 56px)); right: 16px; position: fixed; }
+  /* Ensure toast sits above nav and safe-area */
+  .toast { bottom: calc(16px + var(--safe-bottom) + var(--tabbar-h, 56px)); }
+  /* Nav: guarantee 7 voci su una riga con aree di tap comode */
+  nav .nav { grid-template-columns: repeat(7, 1fr) !important; }
+  nav .nav a { padding: 6px 4px 8px; min-height: 56px; }
+  nav .nav a svg { width: 22px; height: 22px; }
+  nav .nav a span { font-size: 11px; line-height: 1.2; }
+}
+
+/* Landscape fallback: leggermente più compatto */
+@media (orientation: landscape) {
+  nav .nav a { min-height: 48px; }
+  .fab { bottom: calc(12px + var(--safe-bottom)); right: 12px; }
+  .toast { bottom: calc(12px + var(--safe-bottom)); }
+}
+
+/* Table cells: wrap morbido su smartphone, ma preserva numeri */
+td, th { word-break: break-word; }
+td[data-numeric], th[data-numeric] { text-align: right; white-space: nowrap; }
+
+/* Scroll behavior */
+html { scroll-behavior: smooth; overscroll-behavior-y: contain; }
+</style>
+
+</head>
+<body>
+  <header>
+    <div class="h-wrap">
+      <div class="logo" title="ArmaLog">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h6l3-4h7l2 4-2 4h-7l-3-4H3z"/><circle cx="7" cy="12" r="2"/></svg>
+        <span>ArmaLog</span>
+        <span class="subtitle" id="netStatus">• offline</span>
+      </div>
+      <div class="spacer"></div>
+      <div class="h-actions">
+        <button class="ghost" id="btnTheme" title="Tema chiaro/scuro">🌓</button>
+      </div>
+    </div>
+  
+  <nav class="top-nav">
+    <div class="nav">
+      <a href="#dashboard" data-tab="dashboard" class="active"> 
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13h8V3L3 13z"></path><path d="M13 21h8V8l-8 13z"></path></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="#armi" data-tab="armi">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h6l3-4h7l2 4-2 4h-7l-3-4H4z"></path><circle cx="7" cy="12" r="2"/></svg>
+        <span>Armi</span>
+      </a>
+      <a href="#sessioni" data-tab="sessioni">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="3"/><path d="M7 8h10"/><path d="M7 12h6"/></svg>
+        <span>Sessioni</span>
+      </a>
+      <a href="#manutenzioni" data-tab="manutenzioni">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h14l4 5-4 5H3z"/><path d="M12 7v10"/></svg>
+        <span>Manut.</span>
+      </a>
+      <a href="#munizioni" data-tab="munizioni">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8l3 6-3 12H8L5 9 8 3z"/></svg>
+        <span>Muniz.</span>
+      </a>
+      
+      <a href="#licenze" data-tab="licenze">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"></rect><path d="M7 8h6"/><path d="M7 12h10"/><path d="M7 16h8"/></svg>
+        <span>Licenze</span>
+      </a>
+<a href="#settings" data-tab="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 8.94 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09c0 .66.39 1.26 1 1.51.57.24 1.22.1 1.68-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06c-.43.46-.57 1.11-.33 1.68.25.61.85 1 1.51 1H21a2 2 0 1 1 0 4h-.09c-.66 0-1.26.39-1.51 1z"/></svg>
+        <span>Impost.</span>
+      </a>
+    </div>
+  </nav>
+</header>
+
+  <div class="container">
+    <section id="tab-dashboard" class="tab">
+      <h2 class="title">Dashboard</h2>
+      <div class="grid kpi">
+        <div class="card kpi"><div class="muted">Colpi totali</div><div class="big" id="kpi-shots">0</div></div>
+        <div class="card kpi"><div class="muted">Sessioni</div><div class="big" id="kpi-sessions">0</div></div>
+        <div class="card kpi"><div class="muted">Armi</div><div class="big" id="kpi-arms">0</div></div>
+        <div class="card kpi"><div class="muted">Tasso guasti /100 colpi</div><div class="big" id="kpi-ftf">0</div></div>
+      </div>
+      <div class="grid dashCharts">
+        <div class="card">
+          <div class="flex"><div class="title">Colpi per mese</div><div class="right muted" id="shotsPerMonthInfo"></div></div>
+          <canvas id="chartShotsMonth" height="140"></canvas>
+        </div>
+        <div class="card">
+          <div class="flex"><div class="title">Colpi per arma</div><div class="right muted">ultimi 12 mesi</div></div>
+          <canvas id="chartShotsByGun" height="140"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-armi" class="tab hidden">
+      <div class="flex"><h2 class="title">Armi</h2><div class="right table-actions"><input id="searchArmi" placeholder="Cerca per modello/matricola…"/></div></div>
+      <div class="card hidden" id="cardFormArma">
+        <form id="formArma" novalidate>
+          <input type="hidden" id="armaId" />
+          <div class="row">
+            <div><label>Matricola</label><input id="armaMatricola" required placeholder="es. AB123456"></div>
+            <div><label>Modello</label><input id="armaModello" required placeholder="es. G17 Gen5"></div>
+            <div><label>Marca</label><input id="armaMarca" placeholder="es. Glock"></div>
+            <div><label>Tipo</label>
+              <select id="armaTipo">
+  <option value="" disabled selected hidden>— scegli tipo (es. Pistola) —</option>
+<option value="Pistola">Pistola</option>
+                <option value="Fucile">Fucile</option>
+                <option value="Carabina">Carabina</option>
+                <option value="Altro">Altro</option>
+              </select>
+            </div>
+            <div><label>Calibro</label><input id="armaCalibro" placeholder="es. 9x19"/></div>
+            <div><label>Data acquisto</label><input id="armaAcquisto" type="date" placeholder="es. 2025-09-07"></div>
+          </div>
+          <div class="row">
+            <div><label>Note</label><input id="armaNote" placeholder="es. Canna 4.5, mire notturne"></div>
+            <div class="flex" style="justify-content:flex-end;margin-top:18px"><button type="submit" id="armaSave">Salva</button><button class="ghost" type="reset" id="armaReset">Annulla</button></div>
+          </div>
+        </form>
+      </div>
+      <div class="card">
+        <div class="table-wrap"><table id="tblArmi">
+          <thead><tr>
+            <th data-k="modello">Modello</th>
+            <th data-k="matricola">Matricola</th>
+            <th data-k="tipo">Tipo</th>
+            <th data-k="calibro">Calibro</th>
+            <th>Colpi</th>
+            <th>Manutenzione</th>
+            <th></th>
+          </tr></thead>
+          <tbody></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <section id="tab-sessioni" class="tab hidden">
+      <div class="flex"><h2 class="title">Sessioni</h2><div class="right table-actions"><input id="searchSessioni" placeholder="Filtra…"/></div></div>
+      <div class="card hidden" id="cardFormSessione">
+        <form id="formSessione" novalidate>
+          <input type="hidden" id="sessId" />
+          <div class="row">
+            <div><label>Arma</label><select id="sessArma" required>
+  <option value="" disabled selected hidden>— scegli arma (es. Glock 17) —</option>
+</select></div>
+            <div><label>Data</label><input id="sessData" type="date" required placeholder="es. 2025-09-07"></div>
+            <div><label>Luogo</label><input id="sessLuogo" placeholder="es. TSN Milano"></div>
+            <div><label>Colpi</label><input id="sessColpi" type="number" min="0" required placeholder="es. 100"></div>
+            <div><label>Munizione</label><input id="sessMuni" placeholder="es. 9x19 124gr FMJ"></div>
+            <div><label>Costo/colpo</label><input id="sessCosto" type="number" step="0.01" min="0" placeholder="es. 0.25"></div>
+            <div><label>Malfunzionamenti</label><input id="sessGuasti" type="number" min="0" placeholder="es. 0"></div>
+            <div><label>Punteggio</label><input id="sessScore" type="number" step="0.1" placeholder="es. 93"></div>
+          </div>
+          <div class="row">
+            <div><label>Note</label><input id="sessNote" placeholder="es. Prova nuova molla recupero"></div>
+            <div class="flex" style="justify-content:flex-end;margin-top:18px"><button type="submit" id="sessSave">Salva</button><button class="ghost" type="reset" id="sessReset">Annulla</button></div>
+          </div>
+        </form>
+      </div>
+      <div class="card">
+        <div class="table-wrap"><table id="tblSessioni">
+          <thead><tr>
+            <th data-k="data">Data</th><th data-k="arma">Arma</th><th data-k="colpi">Colpi</th><th data-k="guasti">Guasti</th><th data-k="costo">Costo</th><th data-k="luogo">Luogo</th><th></th>
+          </tr></thead>
+          <tbody></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <section id="tab-manutenzioni" class="tab hidden">
+      <div class="flex"><h2 class="title">Manutenzioni</h2><div class="right table-actions"><input id="searchManu" placeholder="Filtra…"/></div></div>
+      <div class="card hidden" id="cardFormManu">
+        <form id="formManu" novalidate>
+          <input type="hidden" id="manuId" />
+          <div class="row">
+            <div><label>Arma</label><select id="manuArma" required></select></div>
+            <div><label>Data</label><input id="manuData" type="date" required/></div>
+            <div><label>Intervento</label>
+              <select id="manuTipo">
+                <option>Pulizia</option>
+                <option>Sostituzione parte</option>
+                <option>Ispezione</option>
+                <option>Altro</option>
+              </select>
+            </div>
+            <div><label>Ore</label><input id="manuOre" type="number" step="0.1" min="0"/></div>
+            <div><label>Costo</label><input id="manuCosto" type="number" step="0.01" min="0"/></div>
+          </div>
+          <div class="row">
+            <div><label>Note</label><input id="manuNote"/></div>
+            <div class="flex" style="justify-content:flex-end;margin-top:18px"><button type="submit" id="manuSave">Salva</button><button class="ghost" type="reset" id="manuReset">Annulla</button></div>
+          </div>
+        </form>
+      </div>
+      <div class="card">
+        <div class="table-wrap"><table id="tblManu">
+          <thead><tr>
+            <th data-k="data">Data</th><th data-k="arma">Arma</th><th data-k="tipo">Intervento</th><th data-k="costo">Costo</th><th data-k="ore">Ore</th><th></th>
+          </tr></thead>
+          <tbody></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <section id="tab-munizioni" class="tab hidden">
+      <div class="flex"><h2 class="title">Munizioni</h2><div class="right table-actions"><input id="searchMuni" placeholder="Filtra…"/></div></div>
+      <div class="card hidden" id="cardFormMuni">
+        <form id="formMuni" novalidate>
+          <input type="hidden" id="muniId" />
+          <div class="row">
+            <div><label>Calibro</label><input id="muniCalibro" required placeholder="es. 9x19"></div>
+            <div><label>Produttore</label><input id="muniProd" placeholder="es. Fiocchi"></div>
+            <div><label>Lotto</label><input id="muniLotto" placeholder="es. L2309"></div>
+            <div><label>Qtà iniziale</label><input id="muniQInit" type="number" min="0" required placeholder="es. 500"></div>
+            <div><label>Qtà attuale</label><input id="muniQAtt" type="number" min="0" required placeholder="es. 380"></div>
+            <div><label>Prezzo unitario</label><input id="muniPrezzo" type="number" min="0" step="0.01" placeholder="es. 0.25"></div>
+            <div><label>Data acquisto</label><input id="muniData" type="date" placeholder="es. 2025-09-07"></div>
+          </div>
+          <div class="row">
+            <div><label>Note</label><input id="muniNote" placeholder="es. FMJ 124 gr"></div>
+            <div class="flex" style="justify-content:flex-end;margin-top:18px"><button type="submit" id="muniSave">Salva</button><button class="ghost" type="reset" id="muniReset">Annulla</button></div>
+          </div>
+        </form>
+      </div>
+      <div class="card">
+        <div class="table-wrap"><table id="tblMuni">
+          <thead><tr>
+            <th data-k="calibro">Calibro</th><th data-k="prod">Produttore</th><th data-k="lotto">Lotto</th><th data-k="qAtt">Qtà attuale</th><th data-k="prezzo">Prezzo</th><th></th>
+          </tr></thead>
+          <tbody></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <section id="tab-licenze" class="tab hidden">
+      <div class="flex">
+        <h2 class="title">Licenze &amp; Tesserini</h2>
+        <div class="right table-actions"><input id="searchLic" placeholder="Filtra…"/></div>
+      </div>
+
+      <div class="card hidden" id="cardFormLic">
+        <form id="formLic" novalidate>
+          <input type="hidden" id="licId" />
+          <div class="row">
+            <div>
+              <label>Tipo documento</label>
+              <select id="licTipo" required>
+                <option value="Licenza">Porto d'armi</option>
+                <option value="Tesserino">Tesserino poligono</option>
+              </select>
+            </div>
+            <div><label>Numero</label><input id="licNumero" placeholder="es. PD-123456"></div>
+            <div><label>Rilasciato da</label><input id="licAutorita" placeholder="es. Questura di Milano"></div>
+            <div><label>Data rilascio</label><input id="licRilascio" type="date"></div>
+            <div><label>Data scadenza</label><input id="licScadenza" type="date"></div>
+            <div id="wrapPoligono"><label>Poligono</label><input id="licPoligono" placeholder="es. TSN Milano"></div>
+          </div>
+          <div class="row">
+            <div><label>Note</label><input id="licNote" placeholder="es. uso sportivo / medicina valida"></div>
+            <div class="flex" style="justify-content:flex-end;margin-top:18px">
+              <button type="submit" id="licSave">Salva</button>
+              <button class="ghost" type="reset" id="licReset">Annulla</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="table-wrap"><table id="tblLic">
+          <thead>
+            <tr>
+              <th data-k="tipo">Tipo</th>
+              <th data-k="numero">Numero</th>
+              <th data-k="autorita">Rilasciato da</th>
+              <th data-k="rilascio">Rilascio</th>
+              <th data-k="scadenza">Scadenza</th>
+              <th data-k="poligono">Poligono</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table></div>
+      </div>
+    </section>
+
+
+    <section id="tab-settings" class="tab hidden">
+  <h2 class="title">Impostazioni</h2>
+  <div class="card">
+    <div class="title">Impostazioni rapide</div>
+    <div class="settings-list">
+      <div class="setting">
+        <div class="label">Tema</div>
+        <div class="controls"><button class="ghost" id="toggleTheme" title="Tema chiaro/scuro">Alterna chiaro/scuro</button></div>
+      </div>
+      <div class="setting">
+        <div class="label">PIN di blocco <span class="muted">(solo schermata)</span></div>
+        <div class="controls">
+          <input id="pinInput" type="password" inputmode="numeric" minlength="4" placeholder="PIN (min 4)"/>
+          <button class="ghost" id="savePin">Salva PIN</button>
+          <button class="ghost" id="clearPin">Rimuovi PIN</button>
+        </div>
+      </div>
+      <div class="setting">
+        <div class="label">Auto-blocco</div>
+        <div class="controls">
+          <input id="autoLockMin" type="number" min="0" step="1" placeholder="Minuti (0 = mai)"/>
+          <div class="chips" role="radiogroup">
+            <button class="chip ghost" data-set="autoLockMin" data-value="0">Off</button>
+            <button class="chip ghost" data-set="autoLockMin" data-value="1">1′</button>
+            <button class="chip ghost" data-set="autoLockMin" data-value="5">5′</button>
+            <button class="chip ghost" data-set="autoLockMin" data-value="10">10′</button>
+          </div>
+          <button class="ghost" id="saveLock">Salva</button>
+        </div>
+      </div>
+      <div class="setting">
+        <div class="label">Soglia manutenzione consigliata</div>
+        <div class="controls">
+          <input id="sogliaManu" type="number" min="0" step="10" placeholder="Colpi"/>
+          <div class="chips" role="radiogroup">
+            <button class="chip ghost" data-set="sogliaManu" data-value="100">100</button>
+            <button class="chip ghost" data-set="sogliaManu" data-value="200">200</button>
+            <button class="chip ghost" data-set="sogliaManu" data-value="300">300</button>
+          </div>
+          <button class="ghost" id="saveSoglia">Salva</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="title">Backup &amp; Importa</div>
+    <div class="actions-row">
+      <button class="ghost" id="btnExportAll" title="Backup JSON">⬇️ Backup</button>
+      <button class="ghost" id="expAllCsv" title="Esporta CSV (tutto)">🧾 Esporta CSV (tutto)</button>
+      <label class="btn ghost" for="importFile" title="Importa JSON">⬆️ Importa</label>
+      <input id="importFile" type="file" accept="application/json" class="hidden" />
+    </div>
+    <p class="muted" style="margin-top:8px">Il backup scarica un file JSON con tutti i dati. Con Importa carichi un JSON salvato in precedenza.</p>
+  </div>
+  <div class="card help">
+    <div class="title">Aiuto rapido</div>
+    <p>Questa app è <strong>offline</strong>: i dati restano sul dispositivo (IndexedDB). Fai spesso un <em>Backup JSON</em> da usare in <em>Imposta &gt; Importa</em> se cambi telefono.</p>
+    <p>CSV: usa “Esporta CSV (tutto)” nelle Impostazioni per esportare tutte le informazioni in un unico file apribile con Excel/LibreOffice.</p>
+    <p>PIN: blocca solo l’accesso all’interfaccia, non cifra i dati. Per più sicurezza, durante il <em>Backup JSON</em> puoi scegliere di cifrare con il PIN.</p>
+    <p><strong>Responsabilità</strong>: usa l’app nel rispetto delle leggi. Non contiene funzioni per l’uso improprio delle armi.</p>
+  </div>
+</section>
+  </div>
+    <footer class="app-footer">© <span id="appYear"></span> · Tutti i diritti riservati · Creato da <strong>Francesco Ronca</strong></footer>
+    <div class="fab">
+    <button id="addBtn" title="Aggiungi">＋</button>
+  </div>
+
+  
+
+  <div class="lock" id="lock">
+    <div class="card">
+      <div class="title">App bloccata</div>
+      <p class="muted">Inserisci il PIN per sbloccare.</p>
+      <div class="flex"><input id="unlockPin" placeholder="PIN" type="password" style="flex:1"/><button id="doUnlock">Sblocca</button></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+<script>
+// ====== Util ======
+const $ = sel => document.querySelector(sel);
+const $$ = sel => Array.from(document.querySelectorAll(sel));
+const fmtDate = iso => iso ? new Date(iso).toLocaleDateString('it-IT') : '';
+const todayISO = () => new Date().toISOString().slice(0,10);
+const uid = () => Math.random().toString(36).slice(2)+Date.now().toString(36);
+const toFloat = v => v===''||v==null?null:parseFloat(v);
+const toInt = v => v===''||v==null?0:parseInt(v,10);
+function toast(msg, ms=2000){const t=$('#toast');t.textContent=msg;t.classList.remove('hidden');setTimeout(()=>t.classList.add('hidden'),ms)}
+function download(filename, text){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'text/plain'}));a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)}
+function csvEscape(v){if(v==null) return ''; const s=String(v).replaceAll('"','""'); return /[";,\n]/.test(s)?`"${s}"`:s}
+function toCSV(rows){if(!rows.length) return ''; const headers=Object.keys(rows[0]); const head=headers.map(csvEscape).join(';'); const body=rows.map(r=>headers.map(h=>csvEscape(r[h])).join(';')).join('\n'); return head+'\n'+body}
+function monthKey(d){const dt=new Date(d);return dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,'0')}
+
+// ====== Theme & Settings (localStorage) ======
+const Settings={
+  get(){return JSON.parse(localStorage.getItem('arma_settings')||'{}')},
+  set(p){localStorage.setItem('arma_settings',JSON.stringify({...Settings.get(),...p}))},
+  theme(){return document.documentElement.getAttribute('data-theme')||'dark'},
+  apply(){const s=Settings.get();document.documentElement.setAttribute('data-theme', s.theme||'dark');$('#autoLockMin').value=s.autoLockMin??0;$('#sogliaManu').value=s.sogliaManu??200;},
+}
+
+// ====== Simple DB (IndexedDB) ======
+const DB={db:null,async open(){return new Promise((res,rej)=>{const r=indexedDB.open('armalog',3);r.onupgradeneeded=e=>{const db=e.target.result; if(!db.objectStoreNames.contains('armi')){const s=db.createObjectStore('armi',{keyPath:'id'}); s.createIndex('matricola','matricola',{unique:true})}
+  if(!db.objectStoreNames.contains('sessioni')){const s=db.createObjectStore('sessioni',{keyPath:'id'}); s.createIndex('armaId','armaId'); s.createIndex('data','data')}
+  if(!db.objectStoreNames.contains('manutenzioni')){const s=db.createObjectStore('manutenzioni',{keyPath:'id'}); s.createIndex('armaId','armaId'); s.createIndex('data','data')}
+  if(!db.objectStoreNames.contains('munizioni')){db.createObjectStore('munizioni',{keyPath:'id'})} if(!db.objectStoreNames.contains('licenze')){ db.createObjectStore('licenze',{keyPath:'id'}) }
+}; r.onsuccess=()=>{DB.db=r.result; res(DB.db)}; r.onerror=()=>rej(r.error)})},
+  tx(stores,mode='readonly'){return DB.db.transaction(stores,mode)},
+  async getAll(store){return new Promise((res,rej)=>{const t=DB.tx([store]);const req=t.objectStore(store).getAll();req.onsuccess=()=>res(req.result||[]);req.onerror=()=>rej(req.error)})},
+  async put(store,val){return new Promise((res,rej)=>{const t=DB.tx([store],'readwrite');const req=t.objectStore(store).put(val);req.onsuccess=()=>res(val);req.onerror=()=>rej(req.error)})},
+  async del(store,key){return new Promise((res,rej)=>{const t=DB.tx([store],'readwrite');const req=t.objectStore(store).delete(key);req.onsuccess=()=>res();req.onerror=()=>rej(req.error)})},
+}
+
+// ====== State ======
+const State={armi:[],sessioni:[],manutenzioni:[],munizioni:[],licenze:[],async reload(){
+  [State.armi, State.sessioni, State.manutenzioni, State.munizioni, State.licenze] = await Promise.all(['armi','sessioni','manutenzioni','munizioni','licenze'].map(s=>DB.getAll(s)));
+  render.all();}
+}
+
+// ====== Lock (PIN UI only) ======
+const Lock={
+  active:false,
+  async hash(s){const enc=new TextEncoder().encode(s);const ab=await crypto.subtle.digest('SHA-256',enc);return Array.from(new Uint8Array(ab)).map(b=>b.toString(16).padStart(2,'0')).join('')},
+  cfg(){return Settings.get().pinHash},
+  async save(pin){if(!pin||pin.length<4){toast('PIN minimo 4 cifre');return} const h=await Lock.hash(pin); Settings.set({pinHash:h}); toast('PIN salvato')},
+  clear(){const s=Settings.get(); delete s.pinHash; localStorage.setItem('arma_settings', JSON.stringify(s)); try{ document.getElementById('pinInput').value=''; }catch(e){} toast('PIN rimosso')},
+  async require(){const has=!!Lock.cfg(); if(!has) return; Lock.active=true; $('#lock').style.display='flex'; $('#unlockPin').focus()},
+  async unlock(){const pin=$('#unlockPin').value.trim(); if(!pin) return; const ok=(await Lock.hash(pin))===Lock.cfg(); if(ok){Lock.active=false; $('#unlockPin').value=''; $('#lock').style.display='none'; Activity.touch();} else toast('PIN errato')}
+}
+
+// ====== Activity / Auto-lock ======
+const Activity={idleMin:0,timer:null,load(){Activity.idleMin=Settings.get().autoLockMin||0;['click','keydown','pointerdown','touchstart','visibilitychange'].forEach(ev=>document.addEventListener(ev,Activity.touch,{passive:true}))},touch(){if(Activity.timer)clearTimeout(Activity.timer);const m=Settings.get().autoLockMin||0;if(m>0){Activity.timer=setTimeout(()=>Lock.require(),m*60000)}},}
+
+// ====== Charts (Canvas 2D minimal) ======
+function drawLineChart(canvas, labels, values){const ctx=canvas.getContext('2d'); const W=canvas.width=canvas.clientWidth; const H=canvas.height=canvas.clientHeight; ctx.clearRect(0,0,W,H); const pad=28; const min=0; const max=Math.max(5,Math.max(...values)); const xStep=(W-pad*2)/Math.max(1,labels.length-1); const y=(v)=>H-pad-(v/max)*(H-pad*2); ctx.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--accent'); ctx.lineWidth=2; ctx.beginPath(); values.forEach((v,i)=>{const X=pad+i*xStep, Y=y(v); if(i===0)ctx.moveTo(X,Y); else ctx.lineTo(X,Y)}); ctx.stroke(); ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--muted'); ctx.font='12px system-ui'; labels.forEach((l,i)=>{const X=pad+i*xStep; ctx.fillText(l.slice(2), X-10, H-8)});} 
+function drawBarChart(canvas, labels, values){const ctx=canvas.getContext('2d'); const W=canvas.width=canvas.clientWidth; const H=canvas.height=canvas.clientHeight; ctx.clearRect(0,0,W,H); const pad=30; const max=Math.max(5,Math.max(...values)); const bw=(W-pad*2)/labels.length*0.7; const gap=((W-pad*2)-bw*labels.length)/Math.max(1,labels.length-1); const start=pad; ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--accent'); labels.forEach((l,i)=>{const v=values[i]; const x=start+i*(bw+gap); const h=(v/max)*(H-2*pad); ctx.fillRect(x, H-pad-h, bw, h)}); ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--muted'); ctx.font='12px system-ui'; labels.forEach((l,i)=>{const x=start+i*(bw+gap); ctx.fillText(l.toUpperCase().slice(0,6), x, H-8)});} 
+
+// ====== Computations ======
+function armaShots(armaId){return State.sessioni.filter(s=>s.armaId===armaId).reduce((a,b)=>a+toInt(b.colpi),0)}
+function armaFaults(armaId){return State.sessioni.filter(s=>s.armaId===armaId).reduce((a,b)=>a+toInt(b.malfunzionamenti||0),0)}
+function lastCleanDate(armaId){const ms=State.manutenzioni.filter(m=>m.armaId===armaId && m.tipoIntervento==='Pulizia').sort((a,b)=>b.data.localeCompare(a.data))[0];return ms?ms.data:null}
+
+// ====== Render ======
+const render={
+  all(){render.kpi(); render.selects(); render.armi(); render.sessioni(); render.manu(); render.muni(); render.licenze(); render.charts() },
+  kpi(){const shots=State.sessioni.reduce((a,b)=>a+toInt(b.colpi),0); $('#kpi-shots').textContent=shots; $('#kpi-sessions').textContent=State.sessioni.length; $('#kpi-arms').textContent=State.armi.length; const ftf=shots?((State.sessioni.reduce((a,b)=>a+toInt(b.malfunzionamenti||0),0)/shots)*100).toFixed(1):0; $('#kpi-ftf').textContent=ftf},
+  selects(){const opts=State.armi.map(a=>`<option value="${a.id}">${a.marca? a.marca+' ':''}${a.modello} (${a.matricola})</option>`).join(''); ['#sessArma','#manuArma'].forEach(id=>$(id).innerHTML=opts)},
+  armi(){const q=$('#searchArmi').value?.toLowerCase()||''; const tbody=$('#tblArmi tbody'); tbody.innerHTML=''; const soglia=Settings.get().sogliaManu??200; State.armi.filter(a=> (a.modello+a.matricola).toLowerCase().includes(q)).sort((a,b)=>a.modello.localeCompare(b.modello)).forEach(a=>{
+      const shots=armaShots(a.id); const lastClean=lastCleanDate(a.id); const sinceClean = lastClean ? State.sessioni.filter(s=>s.armaId===a.id && s.data>lastClean).reduce((x,y)=>x+toInt(y.colpi),0) : shots; const warn= sinceClean>=soglia; 
+      const tr=document.createElement('tr'); tr.innerHTML=`
+        <td>${a.modello}</td>
+        <td>${a.matricola}</td>
+        <td>${a.tipo||''}</td>
+        <td>${a.calibro||''}</td>
+        <td>${shots}</td>
+        <td>${warn?`<span class='badge warn-badge' title='Da ultima pulizia: ${sinceClean}'>Pulizia consigliata</span>`: lastClean?`<span class='badge' title='Ultima pulizia: ${fmtDate(lastClean)}'>${fmtDate(lastClean)}</span>`:'—'}</td>
+        <td class="row-actions">
+          <button class="ghost" data-edit="${a.id}">✏️</button>
+          <button class="danger" data-del="${a.id}">🗑️</button>
+        </td>`;
+      tbody.appendChild(tr)
+  })},
+  sessioni(){const q=($('#searchSessioni').value||'').toLowerCase(); const tbody=$('#tblSessioni tbody'); tbody.innerHTML=''; const rows=State.sessioni.map(s=>({
+      ...s, arma: (State.armi.find(a=>a.id===s.armaId)||{}).modello+` (${(State.armi.find(a=>a.id===s.armaId)||{}).matricola||''})`, costo: s.costoPerColpo? (toInt(s.colpi)*toFloat(s.costoPerColpo)).toFixed(2):''
+    })).filter(r=> (r.arma+' '+r.luogo+' '+r.munizione).toLowerCase().includes(q)).sort((a,b)=>b.data.localeCompare(a.data));
+    rows.forEach(r=>{const tr=document.createElement('tr'); tr.innerHTML=`
+      <td>${fmtDate(r.data)}</td><td>${r.arma}</td><td>${r.colpi}</td><td>${r.malfunzionamenti||0}</td><td>${r.costo||''}</td><td>${r.luogo||''}</td>
+      <td class='row-actions'><button class='ghost' data-edit-s='${r.id}'>✏️</button><button class='danger' data-del-s='${r.id}'>🗑️</button></td>`; tbody.appendChild(tr) })
+  },
+  manu(){const q=($('#searchManu').value||'').toLowerCase(); const tbody=$('#tblManu tbody'); tbody.innerHTML=''; const rows=State.manutenzioni.map(m=>({
+      ...m, arma:(State.armi.find(a=>a.id===m.armaId)||{}).modello+` (${(State.armi.find(a=>a.id===m.armaId)||{}).matricola||''})`
+    })).filter(r=>(r.tipoIntervento+' '+r.arma).toLowerCase().includes(q)).sort((a,b)=>b.data.localeCompare(a.data));
+    rows.forEach(r=>{const tr=document.createElement('tr'); tr.innerHTML=`
+      <td>${fmtDate(r.data)}</td><td>${r.arma}</td><td>${r.tipoIntervento}</td><td>${r.costo||''}</td><td>${r.ore||''}</td>
+      <td class='row-actions'><button class='ghost' data-edit-m='${r.id}'>✏️</button><button class='danger' data-del-m='${r.id}'>🗑️</button></td>`; tbody.appendChild(tr) })
+  },
+  muni(){const q=($('#searchMuni').value||'').toLowerCase(); const tbody=$('#tblMuni tbody'); tbody.innerHTML=''; const rows=State.munizioni.filter(m=>( (m.calibro+' '+(m.produttore||'')+' '+(m.lotto||'')).toLowerCase().includes(q))).sort((a,b)=> (a.calibro||'').localeCompare(b.calibro||''));
+    rows.forEach(r=>{const tr=document.createElement('tr'); tr.innerHTML=`
+      <td>${r.calibro}</td><td>${r.produttore||''}</td><td>${r.lotto||''}</td><td>${r.quantitaAttuale}</td><td>${r.prezzoUnitario||''}</td>
+      <td class='row-actions'><button class='ghost' data-edit-u='${r.id}'>✏️</button><button class='danger' data-del-u='${r.id}'>🗑️</button></td>`; tbody.appendChild(tr) })
+  },
+  
+  licenze(){const q=($('#searchLic').value||'').toLowerCase(); const tbody=$('#tblLic tbody'); if(!tbody) return; tbody.innerHTML='';
+    const rows = State.licenze
+      .filter(l => ((l.tipo||'')+' '+(l.numero||'')+' '+(l.autorita||'')+' '+(l.poligono||'')+(l.note?(' '+l.note):'')).toLowerCase().includes(q))
+      .sort((a,b)=> (b.scadenza||'').localeCompare(a.scadenza||''));
+    rows.forEach(l=>{
+      const tr=document.createElement('tr'); tr.innerHTML=`
+        <td>${l.tipo||''}</td>
+        <td>${l.numero||''}</td>
+        <td>${l.autorita||''}</td>
+        <td>${fmtDate(l.rilascio)}</td>
+        <td>${fmtDate(l.scadenza)}</td>
+        <td>${l.tipo==='Tesserino'?(l.poligono||''):''}</td>
+        <td class="row-actions">
+          <button class="ghost" data-edit-l="${l.id}">✏️</button>
+          <button class="danger" data-del-l="${l.id}">🗑️</button>
+        </td>`;
+      tbody.appendChild(tr);
+    });
+  },
+charts(){
+    // Per mese (ultimi 12)
+    const last12=[]; const now=new Date(); for(let i=11;i>=0;i--){const d=new Date(now.getFullYear(), now.getMonth()-i,1); last12.push(`${d.getFullYear().toString().slice(-2)}/${String(d.getMonth()+1).padStart(2,'0')}`)}
+    const counts=last12.map(lbl=>{const [yy,mm]=lbl.split('/'); const key=`20${yy}-${mm}`; return State.sessioni.filter(s=>monthKey(s.data)===key).reduce((a,b)=>a+toInt(b.colpi),0)});
+    drawLineChart($('#chartShotsMonth'), last12, counts); $('#shotsPerMonthInfo').textContent = counts.reduce((a,b)=>a+b,0)+ ' colpi totali';
+    // Per arma (ultimi 12 mesi)
+
+    const cutoff = new Date(now.getFullYear(), now.getMonth() - 11, 1).toISOString().slice(0, 10);
+    // Raggruppa per arma SOLO partendo dalle sessioni (più robusto)
+    const perGun = new Map();
+    for (const s of State.sessioni) {
+      const shots = toInt(s.colpi);
+      if (s.data >= cutoff && shots > 0) {
+        const a = State.armi.find(x => x.id === s.armaId);
+        const label = a?.modello || 'Arma sconosciuta';
+        perGun.set(label, (perGun.get(label) || 0) + shots);
+      }
+    }
+    const guns = [...perGun.entries()].map(([label, val]) => ({ label, val }))
+      .sort((a, b) => b.val - a.val)
+      .slice(0, 8);
+
+    drawBarChart($('#chartShotsByGun'), guns.map(g=>g.label), guns.map(g=>g.val));
+  }
+}
+
+// ====== Forms handlers ======
+
+// ====== Licenze form helpers ======
+function fillLicForm(l){
+  $('#licId').value = l?.id||'';
+  $('#licTipo').value = l?.tipo||'Licenza';
+  $('#licNumero').value = l?.numero||'';
+  $('#licAutorita').value = l?.autorita||'';
+  $('#licRilascio').value = l?.rilascio||'';
+  $('#licScadenza').value = l?.scadenza||'';
+  $('#licPoligono').value = l?.poligono||'';
+  document.getElementById('wrapPoligono').style.display = ($('#licTipo').value==='Tesserino')?'block':'none';
+}
+function licFromForm(){
+  return {
+    id: $('#licId').value || uid(),
+    tipo: $('#licTipo').value,
+    numero: $('#licNumero').value.trim(),
+    autorita: $('#licAutorita').value.trim(),
+    rilascio: $('#licRilascio').value || null,
+    scadenza: $('#licScadenza').value || null,
+    poligono: ($('#licTipo').value==='Tesserino') ? $('#licPoligono').value.trim() : '',
+    note: $('#licNote').value.trim()
+  };
+}
+document.getElementById('licTipo')?.addEventListener('change', ()=>fillLicForm(licFromForm()));
+
+function fillArmaForm(a){$('#armaId').value=a?.id||''; $('#armaMatricola').value=a?.matricola||''; $('#armaModello').value=a?.modello||''; $('#armaMarca').value=a?.marca||''; $('#armaTipo').value=a?.tipo||'Pistola'; $('#armaCalibro').value=a?.calibro||''; $('#armaAcquisto').value=a?.dataAcquisto||''; $('#armaNote').value=a?.note||''}
+function armaFromForm(){return {id: $('#armaId').value||uid(), matricola:$('#armaMatricola').value.trim(), modello:$('#armaModello').value.trim(), marca:$('#armaMarca').value.trim(), tipo:$('#armaTipo').value, calibro:$('#armaCalibro').value.trim(), dataAcquisto:$('#armaAcquisto').value||null, note:$('#armaNote').value?.trim()||''}}
+$('#formArma').addEventListener('submit', async e=>{e.preventDefault(); const a=armaFromForm(); if(!a.matricola||!a.modello){toast('Compila matricola e modello'); return} const dup=State.armi.find(x=>x.matricola===a.matricola && x.id!==a.id); if(dup){toast('Matricola già esistente');return} await DB.put('armi',a); await State.reload(); fillArmaForm({}); toast('Arma salvata'); $('#cardFormArma').classList.add('hidden')});
+// FIX: handler reso async per usare await al suo interno
+$('#tblArmi').addEventListener('click', async e=>{const t=e.target.closest('button'); if(!t) return; if(t.dataset.edit){const a=State.armi.find(x=>x.id===t.dataset.edit); fillArmaForm(a); $('#cardFormArma').classList.remove('hidden'); window.scrollTo({top:0,behavior:'smooth'})}
+  if(t.dataset.del){if(confirm('Eliminare arma? Saranno eliminate anche le sue sessioni e manutenzioni.')){const id=t.dataset.del; await DB.del('armi',id); // cascade delete
+    for(const s of State.sessioni.filter(x=>x.armaId===id)) await DB.del('sessioni',s.id);
+    for(const m of State.manutenzioni.filter(x=>x.armaId===id)) await DB.del('manutenzioni',m.id);
+    await State.reload(); toast('Arma eliminata')}}})
+$('#searchArmi').addEventListener('input', ()=>render.armi())
+$('#armaReset').addEventListener('click',()=>{fillArmaForm({}); $('#cardFormArma').classList.add('hidden')})
+
+function fillSessForm(s){$('#sessId').value=s?.id||''; $('#sessArma').value=s?.armaId||''; $('#sessData').value=s?.data||todayISO(); $('#sessLuogo').value=s?.luogo||''; $('#sessColpi').value=s?.colpi||''; $('#sessMuni').value=s?.munizione||''; $('#sessCosto').value=s?.costoPerColpo||''; $('#sessGuasti').value=s?.malfunzionamenti||0; $('#sessScore').value=s?.punteggio||''; $('#sessNote').value=s?.note||''}
+function sessFromForm(){return {id:$('#sessId').value||uid(), armaId:$('#sessArma').value, data:$('#sessData').value, luogo:$('#sessLuogo').value.trim(), colpi:toInt($('#sessColpi').value), munizione:$('#sessMuni').value.trim(), costoPerColpo:toFloat($('#sessCosto').value), malfunzionamenti:toInt($('#sessGuasti').value), punteggio:toFloat($('#sessScore').value), note:$('#sessNote').value.trim()}}
+$('#formSessione').addEventListener('submit', async e=>{e.preventDefault(); const s=sessFromForm(); if(!s.armaId||!s.data){toast('Seleziona arma e data');return} await DB.put('sessioni',s); await State.reload(); fillSessForm({}); toast('Sessione salvata'); $('#cardFormSessione').classList.add('hidden')});
+$('#tblSessioni').addEventListener('click', async e=>{const t=e.target.closest('button'); if(!t) return; if(t.dataset.editS){const s=State.sessioni.find(x=>x.id===t.dataset.editS); fillSessForm(s); $('#cardFormSessione').classList.remove('hidden'); window.scrollTo({top:0,behavior:'smooth'})}
+  if(t.dataset.delS){if(confirm('Eliminare la sessione?')){await DB.del('sessioni',t.dataset.delS); await State.reload(); toast('Sessione eliminata')}}});
+$('#searchSessioni').addEventListener('input', ()=>render.sessioni())
+$('#sessReset').addEventListener('click',()=>{fillSessForm({}); $('#cardFormSessione').classList.add('hidden')})
+
+function fillManuForm(m){$('#manuId').value=m?.id||''; $('#manuArma').value=m?.armaId||''; $('#manuData').value=m?.data||todayISO(); $('#manuTipo').value=m?.tipoIntervento||'Pulizia'; $('#manuOre').value=m?.ore||''; $('#manuCosto').value=m?.costo||''; $('#manuNote').value=m?.note||''}
+function manuFromForm(){return {id:$('#manuId').value||uid(), armaId:$('#manuArma').value, data:$('#manuData').value, tipoIntervento:$('#manuTipo').value, ore:toFloat($('#manuOre').value), costo:toFloat($('#manuCosto').value), note:$('#manuNote').value.trim()}}
+$('#formManu').addEventListener('submit', async e=>{e.preventDefault(); const m=manuFromForm(); if(!m.armaId||!m.data){toast('Seleziona arma e data');return} await DB.put('manutenzioni',m); await State.reload(); fillManuForm({}); toast('Manutenzione salvata'); $('#cardFormManu').classList.add('hidden')});
+$('#tblManu').addEventListener('click', async e=>{const t=e.target.closest('button'); if(!t) return; if(t.dataset.editM){const m=State.manutenzioni.find(x=>x.id===t.dataset.editM); fillManuForm(m); $('#cardFormManu').classList.remove('hidden'); window.scrollTo({top:0,behavior:'smooth'})}
+  if(t.dataset.delM){if(confirm('Eliminare la manutenzione?')){await DB.del('manutenzioni',t.dataset.delM); await State.reload(); toast('Voce eliminata')}}});
+$('#searchManu').addEventListener('input', ()=>render.manu())
+$('#manuReset').addEventListener('click',()=>{fillManuForm({}); $('#cardFormManu').classList.add('hidden')})
+
+function fillMuniForm(u){$('#muniId').value=u?.id||''; $('#muniCalibro').value=u?.calibro||''; $('#muniProd').value=u?.produttore||''; $('#muniLotto').value=u?.lotto||''; $('#muniQInit').value=u?.quantitaIniziale||''; $('#muniQAtt').value=u?.quantitaAttuale||''; $('#muniPrezzo').value=u?.prezzoUnitario||''; $('#muniData').value=u?.dataAcquisto||''; $('#muniNote').value=u?.note||''}
+function muniFromForm(){return {id:$('#muniId').value||uid(), calibro:$('#muniCalibro').value.trim(), produttore:$('#muniProd').value.trim(), lotto:$('#muniLotto').value.trim(), quantitaIniziale:toInt($('#muniQInit').value), quantitaAttuale:toInt($('#muniQAtt').value), prezzoUnitario:toFloat($('#muniPrezzo').value), dataAcquisto:$('#muniData').value||null, note:$('#muniNote').value.trim()}}
+$('#formMuni').addEventListener('submit', async e=>{e.preventDefault(); const u=muniFromForm(); if(!u.calibro){toast('Inserisci il calibro');return} await DB.put('munizioni',u); await State.reload(); fillMuniForm({}); toast('Munizioni salvate'); $('#cardFormMuni').classList.add('hidden')});
+$('#tblMuni').addEventListener('click', async e=>{const t=e.target.closest('button'); if(!t) return; if(t.dataset.editU){const u=State.munizioni.find(x=>x.id===t.dataset.editU); fillMuniForm(u); $('#cardFormMuni').classList.remove('hidden'); window.scrollTo({top:0,behavior:'smooth'})}
+  if(t.dataset.delU){if(confirm('Eliminare la riga munizioni?')){await DB.del('munizioni',t.dataset.delU); await State.reload(); toast('Eliminato')}}});
+$('#searchMuni').addEventListener('input', ()=>render.muni())
+$('#muniReset').addEventListener('click',()=>{fillMuniForm({}); $('#cardFormMuni').classList.add('hidden')})
+
+
+// ====== Licenze events ======
+document.getElementById('formLic')?.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const l = licFromForm();
+  if(!l.tipo){ toast('Seleziona il tipo'); return; }
+  await DB.put('licenze', l);
+  await State.reload();
+  fillLicForm({});
+  toast('Salvato');
+  document.getElementById('cardFormLic').classList.add('hidden');
+});
+document.getElementById('licReset')?.addEventListener('click', ()=>{
+  fillLicForm({});
+  document.getElementById('cardFormLic').classList.add('hidden');
+});
+document.getElementById('searchLic')?.addEventListener('input', ()=>render.licenze());
+document.getElementById('tblLic')?.addEventListener('click', async (e)=>{
+  const t = e.target.closest('button'); if(!t) return;
+  if(t.dataset.editL){
+    const l = State.licenze.find(x=>x.id===t.dataset.editL);
+    fillLicForm(l);
+    document.getElementById('cardFormLic').classList.remove('hidden');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  if(t.dataset.delL){
+    if(confirm('Eliminare il documento?')){
+      await DB.del('licenze', t.dataset.delL);
+      await State.reload();
+      toast('Eliminato');
+    }
+  }
+});
+
+
+// ====== Export / Import ======
+function exportJSONObj(){return {version:1, exportedAt:new Date().toISOString(), armi:State.armi, sessioni:State.sessioni, manutenzioni:State.manutenzioni, munizioni:State.munizioni, licenze:State.licenze}}
+async function maybeEncrypt(text){const pin=Settings.get().pinHash? prompt('Vuoi cifrare il backup? Inserisci PIN (oppure Annulla per testo in chiaro)') : null; if(!pin) return text; const ok=(await Lock.hash(pin))===Settings.get().pinHash; if(!ok){alert('PIN errato. Esporto non cifrato.'); return text} const key=await crypto.subtle.importKey('raw', new TextEncoder().encode(pin.padEnd(32,'0').slice(0,32)), {name:'AES-GCM'}, false, ['encrypt']); const iv=crypto.getRandomValues(new Uint8Array(12)); const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv}, key, new TextEncoder().encode(text))); const packed = btoa(String.fromCharCode(...iv, ...ct)); return 'enc:aesgcm:'+packed }
+$('#btnExportAll').addEventListener('click', async ()=>{const json=JSON.stringify(exportJSONObj()); const payload=await maybeEncrypt(json); download(`ArmaLog_backup_${new Date().toISOString().slice(0,10)}.json`, payload)})
+$('#importFile').addEventListener('change', async e=>{const f=e.target.files?.[0]; if(!f) return; const txt=await f.text(); let raw=txt; if(txt.startsWith('enc:aesgcm:')){const pin=prompt('Backup cifrato. Inserisci PIN per sbloccare'); if(!pin){alert('Operazione annullata'); return} try{const data=atob(txt.replace('enc:aesgcm:','')); const bytes=Uint8Array.from(data, c=>c.charCodeAt(0)); const iv=bytes.slice(0,12); const ct=bytes.slice(12); const key=await crypto.subtle.importKey('raw', new TextEncoder().encode(pin.padEnd(32,'0').slice(0,32)), {name:'AES-GCM'}, false, ['decrypt']); const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv}, key, ct); raw=new TextDecoder().decode(pt)}catch(err){alert('PIN errato o file corrotto'); return}}
+  try{const obj=JSON.parse(raw); if(!confirm(`Importare? Armi:${obj.armi?.length||0}, Sessioni:${obj.sessioni?.length||0}`)) return; // simple merge by id & matricola
+    const putAll=[]; for(const a of obj.armi||[]){ if(!a.id) a.id=uid(); if(State.armi.find(x=>x.matricola===a.matricola && x.id!==a.id)) continue; putAll.push(DB.put('armi',a)) }
+    for(const s of obj.sessioni||[]){ if(!s.id) s.id=uid(); putAll.push(DB.put('sessioni',s)) }
+    for(const m of obj.manutenzioni||[]){ if(!m.id) m.id=uid(); putAll.push(DB.put('manutenzioni',m)) }
+    for(const u of obj.munizioni||[]){ if(!u.id) u.id=uid(); putAll.push(DB.put('munizioni',u)) }
+    for(const l of obj.licenze||[]){ if(!l.id) l.id=uid(); putAll.push(DB.put('licenze',l)) }
+    await Promise.all(putAll); await State.reload(); toast('Import completato')
+  }catch(err){alert('File non valido');}
+  e.target.value=''
+})
+
+function exportCSV(name, rows){ if(!rows.length){toast('Niente da esportare'); return} download(`${name}.csv`, toCSV(rows)) }
+
+function exportAllCSV(){
+  const blank = {tipo:'', id:'', armaId:'', matricolaArma:'', modelloArma:'', marca:'', tipoArma:'', calibroArma:'', dataAcquistoArma:'', noteArma:'',
+                 dataSessione:'', luogo:'', colpi:'', munizione:'', costoPerColpo:'', malfunzionamenti:'', punteggio:'', noteSessione:'',
+                 dataManutenzione:'', tipoIntervento:'', ore:'', costo:'', noteManutenzione:'',
+                 calibroMunizione:'', produttore:'', lotto:'', quantitaIniziale:'', quantitaAttuale:'', prezzoUnitario:'', dataAcquistoMunizione:'', noteMunizione:'', tipoLic:'', numeroLic:'', autoritaLic:'', rilascioLic:'', scadenzaLic:'', poligonoLic:'', noteLic:''};
+
+  const rows = [];
+
+  // ARMI
+  State.armi.forEach(a=>{
+    rows.push({...blank, tipo:'Arma', id:a.id, armaId:a.id,
+      matricolaArma:a.matricola, modelloArma:a.modello, marca:a.marca||'',
+      tipoArma:a.tipo||'', calibroArma:a.calibro||'', dataAcquistoArma:a.dataAcquisto||'', noteArma:a.note||''});
+  });
+
+  // SESSIONI
+  State.sessioni.forEach(s=>{
+    const arma = State.armi.find(x=>x.id===s.armaId) || {};
+    rows.push({...blank, tipo:'Sessione', id:s.id, armaId:s.armaId,
+      matricolaArma:arma.matricola||'', modelloArma:arma.modello||'', marca:arma.marca||'',
+      tipoArma:arma.tipo||'', calibroArma:arma.calibro||'', dataAcquistoArma:arma.dataAcquisto||'', noteArma:arma.note||'',
+      dataSessione:s.data, luogo:s.luogo||'', colpi:s.colpi,
+      munizione:s.munizione||'', costoPerColpo:(s.costoPerColpo??''), malfunzionamenti:(s.malfunzionamenti??0), punteggio:(s.punteggio??''), noteSessione:s.note||''});
+  });
+
+  // MANUTENZIONI
+  State.manutenzioni.forEach(m=>{
+    const arma = State.armi.find(x=>x.id===m.armaId) || {};
+    rows.push({...blank, tipo:'Manutenzione', id:m.id, armaId:m.armaId,
+      matricolaArma:arma.matricola||'', modelloArma:arma.modello||'', marca:arma.marca||'',
+      tipoArma:arma.tipo||'', calibroArma:arma.calibro||'', dataAcquistoArma:arma.dataAcquisto||'', noteArma:arma.note||'',
+      dataManutenzione:m.data, tipoIntervento:m.tipoIntervento, ore:(m.ore??''), costo:(m.costo??''), noteManutenzione:m.note||''});
+  });
+
+  // MUNIZIONI
+  State.munizioni.forEach(u=>{
+    rows.push({...blank, tipo:'Munizione', id:u.id,
+      calibroMunizione:u.calibro, produttore:(u.produttore??''), lotto:(u.lotto??''),
+      quantitaIniziale:u.quantitaIniziale, quantitaAttuale:u.quantitaAttuale,
+      prezzoUnitario:(u.prezzoUnitario??''), dataAcquistoMunizione:(u.dataAcquisto??''), noteMunizione:u.note||''});
+  });
+
+    // LICENZE/TESSERINI
+  State.licenze.forEach(l=>{
+    rows.push({...blank, tipo:'Licenza', id:l.id,
+      tipoLic:l.tipo||'', numeroLic:l.numero||'', autoritaLic:l.autorita||'',
+      rilascioLic:l.rilascio||'', scadenzaLic:l.scadenza||'',
+      poligonoLic:l.tipo==='Tesserino'?(l.poligono||''):'', noteLic:l.note||''});
+  });
+
+  const name = 'armalog_tutto_' + new Date().toISOString().slice(0,10);
+  exportCSV(name, rows);
+}
+$('#expAllCsv')?.addEventListener('click', exportAllCSV);
+
+$('#expSessCsv')?.addEventListener('click',()=>{
+  const rows=State.sessioni.map(s=>({id:s.id, arma:(State.armi.find(a=>a.id===s.armaId)||{}).modello, matricola:(State.armi.find(a=>a.id===s.armaId)||{}).matricola, data:s.data, luogo:s.luogo||'', colpi:s.colpi, munizione:s.munizione||'', costoPerColpo:s.costoPerColpo??'', malfunzionamenti:s.malfunzionamenti??0, punteggio:s.punteggio??'', note:s.note||''}));
+  exportCSV('sessioni', rows)
+});
+$('#expManuCsv')?.addEventListener('click',()=>{
+  const rows=State.manutenzioni.map(m=>({id:m.id, arma:(State.armi.find(a=>a.id===m.armaId)||{}).modello, matricola:(State.armi.find(a=>a.id===m.armaId)||{}).matricola, data:m.data, tipoIntervento:m.tipoIntervento, ore:m.ore??'', costo:m.costo??'', note:m.note||''}));
+  exportCSV('manutenzioni', rows)
+});
+$('#expMuniCsv')?.addEventListener('click',()=>{
+  const rows=State.munizioni.map(u=>({id:u.id, calibro:u.calibro, produttore:u.produttore??'', lotto:u.lotto??'', quantitaIniziale:u.quantitaIniziale, quantitaAttuale:u.quantitaAttuale, prezzoUnitario:u.prezzoUnitario??'', dataAcquisto:u.dataAcquisto??'', note:u.note||''}));
+  exportCSV('munizioni', rows)
+});
+
+
+// ====== Navigation & Add (+) helpers ======
+function hideAllForms(){
+  ['#cardFormArma','#cardFormSessione','#cardFormManu','#cardFormMuni','#cardFormLic'].forEach(sel=>{const el=$(sel); if(el) el.classList.add('hidden')});
+}
+function updateAddButton(){
+  const btn = $('#addBtn');
+  if(!btn) return;
+  const active = document.querySelector('nav .nav a.active')?.dataset.tab;
+  const map = {armi:'Aggiungi arma', sessioni:'Aggiungi sessione', manutenzioni:'Aggiungi manutenzione', munizioni:'Aggiungi munizioni', licenze:'Aggiungi documento'};
+  if(map[active]){ btn.classList.remove('hidden'); btn.title = map[active]; btn.dataset.target = active; btn.textContent = '＋'; }
+  else{ btn.classList.add('hidden'); }
+}
+$('#addBtn')?.addEventListener('click',()=>{
+  const tab=document.querySelector('nav .nav a.active')?.dataset.tab;
+  if(tab==='armi'){ $('#cardFormArma').classList.remove('hidden'); fillArmaForm({}); $('#armaMatricola').focus(); }
+  if(tab==='sessioni'){ $('#cardFormSessione').classList.remove('hidden'); fillSessForm({}); $('#sessData').value=todayISO(); $('#sessArma').focus(); }
+  if(tab==='manutenzioni'){ $('#cardFormManu').classList.remove('hidden'); fillManuForm({}); $('#manuData').value=todayISO(); $('#manuArma').focus(); }
+  if(tab==='munizioni'){ $('#cardFormMuni').classList.remove('hidden'); fillMuniForm({}); $('#muniCalibro').focus(); }
+  if(tab==='licenze'){ $('#cardFormLic').classList.remove('hidden'); fillLicForm({}); $('#licTipo').focus(); }
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+
+// ====== Navigation ======
+$$('nav .nav a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault(); const tab=a.dataset.tab; $$('.tab').forEach(el=>el.classList.add('hidden')); $(`#tab-${tab}`).classList.remove('hidden'); $$('nav .nav a').forEach(x=>x.classList.remove('active')); a.classList.add('active'); hideAllForms(); updateAddButton(); window.scrollTo({top:0,behavior:'smooth'})}))
+
+
+; (function(){
+  function setNavAriaCurrent(active){
+    document.querySelectorAll('nav .nav a').forEach(link=>{
+      if(link===active){ link.setAttribute('aria-current','page'); }
+      else { link.removeAttribute('aria-current'); }
+    });
+  }
+  // hook existing nav click: after it toggles classes, call setNavAriaCurrent
+  document.querySelectorAll('nav .nav a').forEach(a=>{
+    a.addEventListener('click', ()=> setNavAriaCurrent(a), {capture:false});
+  });
+  // set initial on page load
+  const firstActive = document.querySelector('nav .nav a.active');
+  if(firstActive) setNavAriaCurrent(firstActive);
+})();
+
+// Settings handlers
+$('#toggleTheme').addEventListener('click',()=>{const cur=Settings.get().theme||'dark'; const next=cur==='dark'?'light':'dark'; document.documentElement.setAttribute('data-theme',next); Settings.set({theme:next})})
+$('#btnTheme').addEventListener('click',()=>$('#toggleTheme').click())
+$('#savePin').addEventListener('click',()=>Lock.save($('#pinInput').value.trim()))
+$('#clearPin').addEventListener('click',()=>Lock.clear())
+$('#saveLock').addEventListener('click',()=>{Settings.set({autoLockMin:toInt($('#autoLockMin').value||0)}); Activity.touch(); toast('Impostato')})
+$('#saveSoglia').addEventListener('click',()=>{Settings.set({sogliaManu:toInt($('#sogliaManu').value||200)}); render.armi(); toast('Salvato')})
+$('#doUnlock').addEventListener('click',()=>Lock.unlock())
+$('#unlockPin').addEventListener('keydown',e=>{if(e.key==='Enter') Lock.unlock()})// ====== Extra save click handlers (safety) ======
+function safeSave(handler){
+  return async function(ev){ ev?.preventDefault?.(); try{ await handler(); } catch(err){ console.error(err); alert('Errore salvataggio: '+(err?.message||err)); } }
+}
+$('#armaSave')?.addEventListener('click', safeSave(async ()=>{ const a=armaFromForm(); if(!a.matricola?.trim()||!a.modello?.trim()){ toast('Compila matricola e modello'); return; } await DB.put('armi',a); await State.reload(); fillArmaForm({}); toast('Arma salvata'); $('#cardFormArma').classList.add('hidden'); }));
+$('#sessSave')?.addEventListener('click', safeSave(async ()=>{ const s=sessFromForm(); if(!s.armaId){ toast('Seleziona un\'arma'); return; } await DB.put('sessioni',s); await State.reload(); fillSessForm({}); toast('Sessione salvata'); $('#cardFormSessione').classList.add('hidden'); }));
+$('#manuSave')?.addEventListener('click', safeSave(async ()=>{ const m=manuFromForm(); if(!m.armaId){ toast('Seleziona un\'arma'); return; } await DB.put('manutenzioni',m); await State.reload(); fillManuForm({}); toast('Manutenzione salvata'); $('#cardFormManu').classList.add('hidden'); }));
+$('#muniSave')?.addEventListener('click', safeSave(async ()=>{ const u=muniFromForm(); if(!u.calibro?.trim()){ toast('Inserisci il calibro'); return; } await DB.put('munizioni',u); await State.reload(); fillMuniForm({}); toast('Munizioni salvate'); $('#cardFormMuni').classList.add('hidden'); }));
+
+// ====== Init ======
+(async function(){ await DB.open(); Settings.apply(); Activity.load(); Activity.touch(); await State.reload(); Lock.require(); $('#sessData').value=todayISO(); $('#manuData').value=todayISO(); updateAddButton(); hideAllForms(); })();
+
+// Quick 'chip' setters for the settings page
+document.addEventListener('click', function(e){
+  var btn = e.target.closest('[data-set]');
+  if(!btn) return;
+  var target = btn.getAttribute('data-set');
+  var value = btn.getAttribute('data-value');
+  var input = document.getElementById(target);
+  if(input){ input.value = value; try{ input.focus(); }catch(e){} toast('Impostato: ' + value); }
+});
+
+// Footer dynamic year
+(function(){ var y=document.getElementById('appYear'); if(y){ y.textContent = new Date().getFullYear(); } })();
+
+// Haptic feedback in toast
+(function(){ var origToast = toast; window.toast = function(msg, ms){ try{ if(navigator.vibrate) navigator.vibrate(15); }catch(e){} return origToast(msg, ms); } })();
+
+// Auto-lock on background
+document.addEventListener('visibilitychange', function(){
+  try{
+    if(document.visibilityState === 'hidden'){ if(Lock.cfg()) sessionStorage.setItem('lockOnReturn','1'); }
+    else if(sessionStorage.getItem('lockOnReturn')==='1'){ sessionStorage.removeItem('lockOnReturn'); if(Lock.cfg()) Lock.require(); }
+  }catch(e){}
+});
+
+// A11y: chips as radios
+function syncChips(groupId){
+  var el = document.getElementById(groupId);
+  var val = String(el ? el.value : '');
+  document.querySelectorAll('[data-set="'+groupId+'"]').forEach(function(b){
+    b.setAttribute('role','radio');
+    var on = String(b.getAttribute('data-value'))===val;
+    b.setAttribute('aria-checked', on ? 'true':'false');
+  });
+}
+['autoLockMin','sogliaManu'].forEach(syncChips);
+document.addEventListener('click', function(e){
+  var btn = e.target.closest('[data-set]'); if(!btn) return; var id = btn.getAttribute('data-set'); setTimeout(function(){ syncChips(id); }, 0);
+});
+
+// Empty states for tables after render
+(function(){
+  function ensureEmpty(tbody, text, cols){
+    if(!tbody) return;
+    if(tbody.children.length===0){ tbody.innerHTML = '<tr class="empty"><td colspan="'+cols+'">'+text+'</td></tr>'; }
+  }
+  var wrap=function(fn,after){ return function(){ fn.apply(render, arguments); after(); } };
+  render.armi = wrap(render.armi, function(){ ensureEmpty(document.querySelector('#tblArmi tbody'),'Nessuna arma salvata',7); });
+  render.sessioni = wrap(render.sessioni, function(){ ensureEmpty(document.querySelector('#tblSessioni tbody'),'Nessuna sessione registrata',7); });
+  render.manu = wrap(render.manu, function(){ ensureEmpty(document.querySelector('#tblManu tbody'),'Nessuna manutenzione',6); });
+  render.muni = wrap(render.muni, function(){ ensureEmpty(document.querySelector('#tblMuni tbody'),'Nessuna riga munizioni',6); });
+  render.licenze = wrap(render.licenze, function(){ ensureEmpty(document.querySelector('#tblLic tbody'),'Nessuna licenza/tesserino',7); });
+})();
+
+// Chart palette/theme override
+(function(){
+  function getVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  var PALETTE = ['#3B82F6','#EF4444','#10B981','#F59E0B','#6366F1','#14B8A6','#F43F5E','#0EA5E9'];
+  window.drawLineChart = function(canvas, labels, values){
+    var ctx=canvas.getContext('2d'); var W=canvas.width=canvas.clientWidth; var H=canvas.height=canvas.clientHeight;
+    var pad=24; var max=Math.max(1,Math.max.apply(null,values.concat([0]))); var min=0;
+    var xStep=(W-2*pad)/Math.max(labels.length-1,1); var y=function(v){ return H-pad- ((v-min)/(max-min))*(H-2*pad); };
+    ctx.clearRect(0,0,W,H);
+    ctx.globalAlpha=0.2; ctx.strokeStyle=getVar('--muted')||'#506070'; ctx.beginPath();
+    for(var i=0;i<5;i++){ var yv = pad + i*(H-2*pad)/4; ctx.moveTo(pad,yv); ctx.lineTo(W-pad,yv); } ctx.stroke(); ctx.globalAlpha=1;
+    ctx.lineWidth=3; ctx.strokeStyle=getVar('--accent')||PALETTE[0]; ctx.beginPath();
+    values.forEach(function(v,i){ var X=pad+i*xStep, Y=y(v); if(i===0) ctx.moveTo(X,Y); else ctx.lineTo(X,Y); }); ctx.stroke();
+    ctx.fillStyle=getVar('--muted')||'#506070'; ctx.font='12px system-ui'; labels.forEach(function(l,i){ var X=pad+i*xStep; ctx.fillText(l.slice(2), X-10, H-8); });
+  };
+  window.drawBarChart = function(canvas, labels, values){
+    var ctx=canvas.getContext('2d'); var W=canvas.width=canvas.clientWidth; var H=canvas.height=canvas.clientHeight;
+    var pad=24; var max=Math.max(1,Math.max.apply(null,values.concat([0])));
+    ctx.clearRect(0,0,W,H);
+    ctx.globalAlpha=0.2; ctx.strokeStyle=getVar('--muted')||'#506070'; ctx.beginPath();
+    for(var i=0;i<5;i++){ var yv = pad + i*(H-2*pad)/4; ctx.moveTo(pad,yv); ctx.lineTo(W-pad,yv); } ctx.stroke(); ctx.globalAlpha=1;
+    var gap=8; var bw = Math.max(12, (W-2*pad - (labels.length-1)*gap)/labels.length);
+    var scale=function(v){ return (v/max)*(H-2*pad); };
+    labels.forEach(function(l,i){
+      var x = pad + i*(bw+gap);
+      ctx.fillStyle = PALETTE[i % PALETTE.length];
+      var h = scale(values[i]||0);
+      ctx.fillRect(x, H-pad-h, bw, h);
+      ctx.fillStyle=getVar('--muted')||'#506070'; ctx.font='11px system-ui'; ctx.fillText(l.toUpperCase().slice(0,6), x, H-8);
+    });
+  };
+})();
+
+
+// Network status badge next to ArmaLog
+(function(){
+  function updateNetStatus(){
+    try{
+      var el = document.getElementById('netStatus');
+      if(!el) return;
+      var on = navigator.onLine;
+      el.textContent = on ? '• online' : '• offline';
+      el.classList.toggle('online', on);
+      el.classList.toggle('offline', !on);
+    }catch(e){}
+  }
+  window.addEventListener('online', updateNetStatus);
+  window.addEventListener('offline', updateNetStatus);
+  updateNetStatus();
+})();
+
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/service-worker.js').catch(function(err){
+      console.warn('SW registration failed', err);
+    });
+  });
+}
+</script>
+<script>
+if (navigator.serviceWorker) {
+  navigator.serviceWorker.addEventListener('message', function(ev){
+    if (ev && ev.data === 'OFFLINE_READY') {
+      try { toast('Disponibile offline'); } catch(_) { console.log('Disponibile offline'); }
+    }
+  });
+}
+</script>
+
+
+<script>
+(function(){
+  const map = new Map([
+    ['data-edit','Modifica'], ['data-del','Elimina'],
+    ['data-edit-s','Modifica'], ['data-del-s','Elimina'],
+    ['data-edit-m','Modifica'], ['data-del-m','Elimina'],
+    ['data-edit-u','Modifica'], ['data-del-u','Elimina'],
+    ['data-edit-l','Modifica'], ['data-del-l','Elimina'],
+  ]);
+  function annotate(container=document){
+    container.querySelectorAll('.row-actions button').forEach(btn=>{
+      for(const [attr,label] of map){
+        if(btn.hasAttribute(attr)){
+          if(!btn.title) btn.title = label;
+          if(!btn.getAttribute('aria-label')) btn.setAttribute('aria-label', label);
+          break;
+        }
+      }
+    });
+  }
+  // initial
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded', ()=>annotate());
+  }else{
+    annotate();
+  }
+  // observe mutations to annotate rows created later
+  const obs = new MutationObserver((muts)=>{
+    for(const m of muts){
+      if(m.addedNodes && m.addedNodes.length){
+        m.addedNodes.forEach(n=>{
+          if(!(n instanceof Element)) return;
+          if(n.matches && n.matches('.row-actions, tr, table, tbody')) annotate(n);
+          else annotate(n);
+        });
+      }
+    }
+  });
+  obs.observe(document.body, {childList:true, subtree:true});
+})();
+</script>
+
+
+<script>
+/* === Notifications & Reminders (client-first) === */
+const Notif = {
+  supported: ('Notification' in self) && ('serviceWorker' in navigator),
+  canSchedule: (()=>{
+    try { return 'showTrigger' in Notification.prototype && 'TimestampTrigger' in self; } catch(e){ return false; }
+  })(),
+  async ensurePermission(){
+    if(!this.supported) return false;
+    if(Notification.permission === 'granted') return true;
+    if(Notification.permission === 'denied') return false;
+    try{
+      const res = await Notification.requestPermission();
+      return res === 'granted';
+    }catch{ return false; }
+  },
+  async show(title, options={}){
+    try{
+      const reg = await navigator.serviceWorker.getRegistration();
+      if(reg?.showNotification) return reg.showNotification(title, options);
+      return new Notification(title, options);
+    }catch(e){ console.warn('Notification error', e); }
+  },
+  async scheduleAt(title, options={}, whenTs){
+    if(this.canSchedule){
+      try{ new Notification(title, Object.assign({}, options, { showTrigger: new TimestampTrigger(whenTs) })); return; }catch(e){}
+    }
+    // Fallback: store a due reminder; it will be checked next app open
+    const q = JSON.parse(localStorage.getItem('arma_due_reminders')||'[]');
+    q.push({title, options, when: whenTs});
+    localStorage.setItem('arma_due_reminders', JSON.stringify(q));
+  },
+  flushDue(){
+    try{
+      const now = Date.now();
+      const q = JSON.parse(localStorage.getItem('arma_due_reminders')||'[]');
+      const keep=[];
+      q.forEach(r=>{
+        if(r.when<=now){ this.show(r.title, r.options); }
+        else keep.push(r);
+      });
+      localStorage.setItem('arma_due_reminders', JSON.stringify(keep));
+    }catch{}
+  }
+};
+
+// On load: flush pending due reminders
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible') Notif.flushDue(); });
+window.addEventListener('load', ()=>Notif.flushDue());
+
+/* Domain rules: */
+const Reminders = {
+  // 1) After a shooting session, remind maintenance in +1 day if no maintenance logged
+  async schedulePostSession(session){
+    // session: {id, armaId, data, colpi...}
+    const ok = await Notif.ensurePermission(); if(!ok) return;
+    const when = Date.now() + 24*60*60*1000; // +1 day
+    await Notif.scheduleAt('Pulisci arma', {
+      body: 'Non hai registrato una manutenzione dopo la sessione. Ricordati di pulire l’arma.',
+      tag: 'manu-'+session.id,
+      data: {type:'manu-reminder', sessId:session.id, armaId: session.armaId}
+    }, when);
+  },
+  // 2) Weekly backup gentle reminder (every Monday 09:00 local)
+  async scheduleWeeklyBackup(){
+    const ok = await Notif.ensurePermission(); if(!ok) return;
+    const now = new Date();
+    const next = new Date(now);
+    const day = now.getDay(); // 0=Sunday..6=Saturday
+    const daysToMon = (1 - day + 7) % 7 || 7;
+    next.setDate(now.getDate() + daysToMon);
+    next.setHours(9,0,0,0);
+    await Notif.scheduleAt('Backup consigliato', {
+      body: 'Esegui un backup per sicurezza (Impostazioni → Backup).',
+      tag: 'weekly-backup'
+    }, next.getTime());
+  }
+};
+</script>
+
+
+<script>
+// Hook: detect last saved session via DB change in State.reload (lightweight heuristic)
+(function(){
+  const orig = State.reload;
+  State.reload = async function(){
+    const prev = (window.__lastSessions || []).slice();
+    await orig.apply(State, arguments);
+    const cur = (State.sessioni||[]).slice().sort((a,b)=> new Date(b.data)-new Date(a.data));
+    window.__lastSessions = cur.slice(0,5);
+    // If there's a new id not in prev (simple heuristic), schedule reminder
+    const prevIds = new Set(prev.map(x=>x.id));
+    for(const s of cur.slice(0,1)){
+      if(s && !prevIds.has(s.id)){
+        Reminders.schedulePostSession(s);
+      }
+    }
+  };
+  // schedule weekly backup on load (once)
+  if(!localStorage.getItem('arma_weekly_backup_scheduled')){
+    Reminders.scheduleWeeklyBackup().then(()=>localStorage.setItem('arma_weekly_backup_scheduled','1'));
+  }
+})();
+</script>
+
+
+<script>
+/* === License expiry reminders: tessere poligono & porto d'armi === */
+(function(){
+  // Utility: store of scheduled license reminders to avoid duplicates
+  function getSched(){ try{ return JSON.parse(localStorage.getItem('arma_lic_sched')||'{}'); }catch{ return {}; } }
+  function setSched(obj){ try{ localStorage.setItem('arma_lic_sched', JSON.stringify(obj)); }catch{} }
+  function toKey(id, when){ return `lic-${id}-${when}`; }
+  function at9Local(ts){
+    const d = new Date(ts); d.setHours(9,0,0,0); return d.getTime();
+  }
+  const DAY = 24*60*60*1000;
+
+  if(!window.Reminders) window.Reminders = {};
+  Reminders.scheduleLicenze = async function(list){
+    const ok = await Notif.ensurePermission(); if(!ok) return;
+    const sched = getSched();
+    const now = Date.now();
+    (list||[]).forEach(l => {
+      if(!l || !l.id || !l.scadenza) return;
+      const scad = new Date(l.scadenza);
+      if(isNaN(scad)) return;
+      const t0 = at9Local(scad.getTime());     // Giorno della scadenza 09:00
+      const t7 = t0 - 7*DAY;                   // 7 giorni prima
+      const t30 = t0 - 30*DAY;                 // 30 giorni prima
+      const checks = [t30, t7, t0].filter(t => t > now - DAY); // non schedulare nel passato remoto
+
+      // Title/body in base al tipo
+      const tipo = String(l.tipo||'').toLowerCase();
+      let title = 'Scadenza documento';
+      let body = `Documento: ${l.tipo||'—'} — Scadenza: ${scad.toLocaleDateString()}`;
+      if (tipo.includes('porto')){
+        title = 'Rinnovo porto d’armi';
+        body = `Scadenza: ${scad.toLocaleDateString()}. Avvia le pratiche di rinnovo.`;
+      } else if (tipo.includes('tesserino') || tipo.includes('poligono')){
+        title = 'Scadenza tesserino poligono';
+        body = `Poligono: ${l.poligono||'—'} — Scadenza: ${scad.toLocaleDateString()}.`;
+      }
+
+      checks.forEach(async (when) => {
+        const key = toKey(l.id, when);
+        if(sched[key]) return; // già programmato
+        await Notif.scheduleAt(title, {
+          body,
+          tag: key,
+          data: { type:'licence-expiry', licId: l.id, when }
+        }, when);
+        sched[key] = true;
+      });
+    });
+    setSched(sched);
+  };
+
+  // Hook su State.reload per (ri)programmare i promemoria delle licenze
+  (function hookReload(){
+    if(!window.State || !State.reload) return;
+    const prev = State.reload;
+    State.reload = async function(){
+      const r = await prev.apply(State, arguments);
+      try { Reminders.scheduleLicenze((State.licenze||[])); } catch(e){}
+      return r;
+    };
+  })();
+
+  // Programma alla prima apertura
+  window.addEventListener('load', ()=>{
+    try { Reminders.scheduleLicenze((State.licenze||[])); } catch(e){}
+  });
+})();
+</script>
+
+</body>
+</html>
